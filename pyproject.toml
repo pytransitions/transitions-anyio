@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "transitions-anyio"
+version = "0.1.0"
+description = "An extension for the transitions state machine library which runs asynchronous state machines using anyio."
+authors = ["Alexander Neumann <aleneum@gmail.com>", "Omer Katz <omer.drow@gmail.com>"]
+maintainers = ["Omer Katz <omer.drow@gmail.com>"]
+readme = "README.rst"
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+transitions = "^0.8.3"
+anyio = "^2.0.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.1"
+trio = "*"
+curio = "^1.4"
+graphviz = "^0.14.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
