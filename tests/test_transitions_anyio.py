@@ -87,7 +87,6 @@ async def test_async_conditions(m):
     mock.assert_called_once_with()
 
 
-@pytest.mark.xfail(reason="we should investigate")
 async def test_multiple_models(machine_cls):
     m1 = machine_cls(states=['A', 'B', 'C'], initial='A', name="m1")
     m2 = machine_cls(states=['A'], initial='A', name='m2')
@@ -173,7 +172,7 @@ async def test_async_dispatch(machine_cls):
     assert machine.initial == model3.state
 
 
-@pytest.mark.xfail(reason="we should investigate")
+# @pytest.mark.xfail(reason="we should investigate")
 async def test_queued(machine_cls):
     states = ['A', 'B', 'C', 'D']
 

@@ -141,3 +141,4 @@ cython_debug/
 
 # IntelliJ
 .idea/
+.vscode/settings.json

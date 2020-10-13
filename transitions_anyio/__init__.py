@@ -22,21 +22,20 @@ class AnyIOMachine(AsyncMachine):
 
     async def process_context(self, func, model):
         if self.current_context.get() is None:
-            try:
-                async with open_cancel_scope() as scope:
-                    self.current_context.set(scope)
-                    return await func()
-            except get_cancelled_exc_class():
-                return False
-        return await func()
+            res = False
+            async with open_cancel_scope() as scope:
+                self.current_context.set(scope)
+                res = await self._process(func)
+            return res
+        return await self._process(func)
 
-    def switch_model_context(self, model):
+    async def switch_model_context(self, model):
         current_scope = self.current_context.get()
         running_scope = self.async_tasks.get(model, None)
         if current_scope != running_scope:
-            if running_scope is not None:
-                self.async_tasks[model].cancel()
             self.async_tasks[model] = self.current_context.get()
+            if running_scope is not None:
+                await running_scope.cancel()
 
 
 class AnyIOGraphMachine(GraphMachine, AnyIOMachine):
