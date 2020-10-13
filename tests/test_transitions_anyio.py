@@ -143,6 +143,21 @@ async def test_async_callback_event_data(machine_cls):
     assert m.is_B() is True
 
 
+async def test_async_callback_trigger(machine_cls):
+    mock_processed = MagicMock()
+
+    async def on_event(event_data):
+        await event_data.model.to_C()
+        mock_processed()
+
+    m = machine_cls(states=['A', 'B', 'C'],
+                    transitions=[dict(trigger='go', source='A', dest='B', after=on_event)],
+                    initial='A', send_event=True)
+    await m.go()
+    assert m.is_C()
+    assert mock_processed.called
+
+
 async def test_async_invalid_triggers(m):
     await m.to_B()
 

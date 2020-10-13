@@ -1,4 +1,5 @@
 from anyio import create_task_group, get_cancelled_exc_class, open_cancel_scope
+from anyio._backends._curio import CancelScope as CurioCancelScope
 from transitions.extensions import GraphMachine
 from transitions.extensions.asyncio import (AsyncMachine, AsyncTransition,
                                             HierarchicalAsyncMachine,
@@ -21,7 +22,8 @@ class AnyIOMachine(AsyncMachine):
         return results
 
     async def process_context(self, func, model):
-        if self.current_context.get() is None:
+        current = self.current_context.get()
+        if current is None or isinstance(current, CurioCancelScope):
             res = False
             async with open_cancel_scope() as scope:
                 self.current_context.set(scope)
