@@ -25,17 +25,22 @@ class AnyIOMachine(AsyncMachine):
             res = False
             async with open_cancel_scope() as scope:
                 self.current_context.set(scope)
+                if model in self.async_tasks:
+                    self.async_tasks[model].append(scope)
+                else:
+                    self.async_tasks[model] = [scope]
                 res = await self._process(func)
+            self.async_tasks[model].remove(scope)
+            if len(self.async_tasks[model]) == 0:
+                del self.async_tasks[model]
             return res
         return await self._process(func)
 
     async def switch_model_context(self, model):
-        current_scope = self.current_context.get()
-        running_scope = self.async_tasks.get(model, None)
-        if current_scope != running_scope:
-            self.async_tasks[model] = self.current_context.get()
-            if running_scope is not None:
-                await running_scope.cancel()
+        for running_task in self.async_tasks.get(model, []):
+            if self.current_context.get() == running_task or running_task in self.protected_tasks:
+                continue
+            await running_task.cancel()
 
 
 class AnyIOGraphMachine(GraphMachine, AnyIOMachine):
