@@ -31,12 +31,12 @@ class AnyIOMachine(AsyncMachine):
                     self.async_tasks[model].append(scope)
                 else:
                     self.async_tasks[model] = [scope]
-                res = await self._process(func)
+                res = await self._process(func, model)
             self.async_tasks[model].remove(scope)
             if len(self.async_tasks[model]) == 0:
                 del self.async_tasks[model]
             return res
-        return await self._process(func)
+        return await self._process(func, model)
 
     async def switch_model_context(self, model):
         for running_task in self.async_tasks.get(model, []):
