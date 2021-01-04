@@ -8,8 +8,8 @@ readme = "README.rst"
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.6"
-transitions = "^0.8.3"
+python = "^3.6.2"
+transitions = "^0.8.6"
 anyio = "^2.0.2"
 
 [tool.poetry.dev-dependencies]
