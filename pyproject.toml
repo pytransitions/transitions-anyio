@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "transitions-anyio"
-version = "0.1.0"
+version = "0.2.0"
 description = "An extension for the transitions state machine library which runs asynchronous state machines using anyio."
 authors = ["Alexander Neumann <aleneum@gmail.com>", "Omer Katz <omer.drow@gmail.com>"]
 maintainers = ["Omer Katz <omer.drow@gmail.com>"]
