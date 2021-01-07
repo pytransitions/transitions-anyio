@@ -28,7 +28,6 @@ class AnyIOMachine(AsyncMachine):
     async def process_context(self, func, model):
         current = self.current_context.get()
         if current is None or (CurioCancelScope and isinstance(current, CurioCancelScope)):
-            res = False
             async with open_cancel_scope() as scope:
                 self.current_context.set(scope)
                 if model in self.async_tasks:
