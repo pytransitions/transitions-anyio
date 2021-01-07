@@ -1,5 +1,9 @@
 # Changelog
 
+## Release 0.2.0 (January 2021)
+
+- This library now works without curio installed as it should have.
+
 ## Release 0.1.0 (January 2021)
 
 Release 0.1.0 is the initial release:
