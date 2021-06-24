@@ -97,10 +97,10 @@ async def test_multiple_models(machine_cls):
     m2.add_transition(trigger='go', source='A', dest=None, conditions=m1.is_C, after=m1.reset)
 
     async with anyio.create_task_group() as tg:
-        await tg.spawn(m1.go)
-        await tg.spawn(call_delayed, m1.fix, 0.05)
-        await tg.spawn(call_delayed, m1.check, 0.07)
-        await tg.spawn(call_delayed, m2.go, 0.1)
+        tg.start_soon(m1.go)
+        tg.start_soon(call_delayed, m1.fix, 0.05)
+        tg.start_soon(call_delayed, m1.check, 0.07)
+        tg.start_soon(call_delayed, m2.go, 0.1)
 
     assert m1.is_A()
 

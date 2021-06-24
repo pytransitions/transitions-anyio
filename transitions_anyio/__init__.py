@@ -1,13 +1,8 @@
-from anyio import create_task_group, open_cancel_scope
+from anyio import create_task_group, CancelScope
 from transitions.extensions import GraphMachine
 from transitions.extensions.asyncio import (AsyncMachine, AsyncTransition,
                                             HierarchicalAsyncMachine,
                                             NestedAsyncTransition)
-
-try:
-    from anyio._backends._curio import CancelScope as CurioCancelScope
-except ImportError:
-    CurioCancelScope = None
 
 
 class AnyIOMachine(AsyncMachine):
@@ -21,14 +16,18 @@ class AnyIOMachine(AsyncMachine):
 
         async with create_task_group() as tg:
             for par in partials:
-                await tg.spawn(with_result, par)
+                tg.start_soon(with_result, par)
 
         return results
 
     async def process_context(self, func, model):
         current = self.current_context.get()
-        if current is None or (CurioCancelScope and isinstance(current, CurioCancelScope)):
-            async with open_cancel_scope() as scope:
+        if current is None:
+            # If `res` is not set farther below by `await self._process(func, model)`
+            # then there was probably a cancellation, for which `False` should be the
+            # correct return value.
+            res = False
+            with CancelScope() as scope:
                 self.current_context.set(scope)
                 if model in self.async_tasks:
                     self.async_tasks[model].append(scope)
@@ -45,7 +44,7 @@ class AnyIOMachine(AsyncMachine):
         for running_task in self.async_tasks.get(model, []):
             if self.current_context.get() == running_task or running_task in self.protected_tasks:
                 continue
-            await running_task.cancel()
+            running_task.cancel()
 
 
 class AnyIOGraphMachine(GraphMachine, AnyIOMachine):
